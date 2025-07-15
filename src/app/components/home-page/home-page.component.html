@@ -1,0 +1,10 @@
+<main style="background-color: rgb(215, 215, 215); height: calc(100vh - 50px);" *ngIf="tela == 'inicial'">
+  <div class="flex flex-col justify-center items-center p-2">
+    <img src="assets/1333091.png" alt="imagem do cs" style="width: 40%; padding: 20px; border-radius: 5%;   ">
+    <p-button label="Novo mix" icon="pi pi-check" class="p-m-2" [style]="{'background-color':'black', 'color': 'white'}" (click)="novoMix()"></p-button>
+  </div>
+</main>
+
+<section *ngIf="tela == 'mix'">
+  <app-mix-page></app-mix-page>
+</section>

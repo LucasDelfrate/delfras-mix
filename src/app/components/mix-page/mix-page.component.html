@@ -1,0 +1,32 @@
+<section
+  class="flex flex-col"
+  style="background-color: rgb(215, 215, 215); height: calc(100vh - 50px)"
+>
+  <div class="flex p-7 justify-start w-full gap-3 items-center">
+    <h1 class="text-xl">Jogadores</h1>
+    <div class="font-medium">
+      <span class="text-xl">{{ jogadores.length }}/10</span>
+    </div>
+    <i
+      class="pi pi-plus-circle cursor-pointer hover:text-lg transition-text duration-100 easy-in-out"
+      (click)="addJogador()"
+    ></i>
+  </div>
+  <div class="flex px-7 gap-3 w-full">
+    <div
+      class="flex min-w-40 w-auto gap-3 p-5 bg-white size-16 rounded-md items-center justify-between"
+      *ngFor="let jogador of jogadores"
+      style="box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2)"
+    >
+      <img src="assets/ak-47.png" alt="icone-ak" style="width: 30px" />
+      <span class="text-sm">{{ jogador.nick }}</span>
+      <div
+        class="rounded-full w-6 h-6 flex justify-center items-center bg-black text-white text-sm"
+        [ngStyle]="{ 'background-color': getLevelColor(jogador.level) }"
+        style="box-shadow: 0 2px 6px rgba(0, 0, 0, 0.427); font-size: 10px; font-weight: 700"
+      >
+        <span style="text-shadow: 0 0 2px black">{{ jogador.level }}</span>
+      </div>
+    </div>
+  </div>
+</section>

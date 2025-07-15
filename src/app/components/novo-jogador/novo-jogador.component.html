@@ -1,0 +1,30 @@
+<h1 class="flex p-2">Adicionar jogador</h1>
+<form class="p-2 flex justify-between">
+  <div class="flex gap-5">
+    <div class="p-field flex gap-3 items-center">
+      <label for="name">Nome</label>
+      <input id="name" type="text" pInputText [(ngModel)]="jogador.nick" name="nome" />
+    </div>
+
+    <div class="p-field flex gap-3 items-center">
+      <label for="level">Level</label>
+      <p-dropdown
+        id="level"
+        [options]="levels"
+        [(ngModel)]="jogador.level"
+        placeholder="Selecione o level"
+        name="level"
+        appendTo="body"
+      ></p-dropdown>
+    </div>
+  </div>
+  <div>
+    <button
+      pButton
+      type="submit"
+      label="Salvar"
+      class="p-button-primary"
+      (click)="salvarPlayer()"
+    ></button>
+  </div>
+</form>
