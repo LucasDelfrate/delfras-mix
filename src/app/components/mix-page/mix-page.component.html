@@ -98,7 +98,7 @@
           id="time1List"
           [cdkDropListData]="time1.jogadores"
           [cdkDropListConnectedTo]="['time2List', 'jogadores', 'lixeira']"
-          class="w-60 p-3 min-h-[200px] h-96 bg-blue-100 rounded-md transition-all duration-200 text-black"
+          class="w-60 p-3 min-h-[200px] h-96 bg-blue-100 rounded-md transition-all duration-200 text-black gap-2 flex flex-col"
           (cdkDropListDropped)="drop($event)"
         >
           <div class="flex justify-between items-center mb-3">
@@ -158,7 +158,7 @@
           id="time2List"
           [cdkDropListData]="time2.jogadores"
           [cdkDropListConnectedTo]="['time1List', 'jogadores', 'lixeira']"
-          class="w-60 p-3 min-h-[200px] h-96 bg-red-100 rounded-md transition-all duration-200 font-cs text-black"
+          class="w-60 p-3 min-h-[200px] h-[100%] bg-red-100 rounded-md transition-all duration-200 font-cs text-black gap-2 flex flex-col"
           (cdkDropListDropped)="drop($event)"
         >
           <div class="flex justify-between items-center mb-3">
