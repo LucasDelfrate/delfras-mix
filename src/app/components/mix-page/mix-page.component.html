@@ -1,31 +1,223 @@
+<p-toast></p-toast>
+<p-confirmDialog></p-confirmDialog>
 <section
-  class="flex flex-col"
-  style="background-color: rgb(215, 215, 215); height: calc(100vh - 50px)"
+  class="flex flex-col p-4 rounded-md font-cs"
+  style="background-color: rgba(215, 215, 215, 0.116); height: calc(100vh - 200px)"
 >
-  <div class="flex p-7 justify-start w-full gap-3 items-center">
-    <h1 class="text-xl">Jogadores</h1>
+  <div class="flex p-7 justify-start w-full gap-3 items-center h-[15%]">
+    <h1 class="text-xl text-white font-bold">Jogadores</h1>
     <div class="font-medium">
-      <span class="text-xl">{{ jogadores.length }}/10</span>
+      <span class="text-lg text-white"
+        >{{ jogadores.length }} <span class="font-bold">/10</span>
+      </span>
     </div>
     <i
-      class="pi pi-plus-circle cursor-pointer hover:text-lg transition-text duration-100 easy-in-out"
+      class="w-8 h-8 pi pi-plus cursor-pointer text-md hover:bg-slate-600 transition-text duration-100 easy-in-out text-white bg-gray-500 rounded-full cursor-pointer flex items-center justify-center"
+      pTooltip="Adicionar novo jogador"
       (click)="addJogador()"
     ></i>
-  </div>
-  <div class="flex px-7 gap-3 w-full">
-    <div
-      class="flex min-w-40 w-auto gap-3 p-5 bg-white size-16 rounded-md items-center justify-between"
-      *ngFor="let jogador of jogadores"
-      style="box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2)"
-    >
-      <img src="assets/ak-47.png" alt="icone-ak" style="width: 30px" />
-      <span class="text-sm">{{ jogador.nick }}</span>
+    <div class="flex justify-between items-center">
       <div
-        class="rounded-full w-6 h-6 flex justify-center items-center bg-black text-white text-sm"
-        [ngStyle]="{ 'background-color': getLevelColor(jogador.level) }"
-        style="box-shadow: 0 2px 6px rgba(0, 0, 0, 0.427); font-size: 10px; font-weight: 700"
+        id="lixeira"
+        cdkDropList
+        class="w-8 h-8 flex justify-center items-center bg-red-500 rounded-full"
+        (cdkDropListEntered)="onTrashDrop($event)"
+        pTooltip="Arraste o jogador aqui para removê-lo"
       >
-        <span style="text-shadow: 0 0 2px black">{{ jogador.level }}</span>
+        <i class="pi pi-trash text-white text-lg"></i>
+      </div>
+    </div>
+  </div>
+  <div class="flex px-7 gap-3 w-full text-white h-[85%]">
+    <div class="flex flex-col justify-between p-2 gap-3">
+      <!-- Lista de jogadores disponíveis -->
+      <div
+        id="jogadores"
+        class="flex flex-col gap-2 w-60 p-3 bg-[#cacaca] rounded-md h-[90%] text-black overflow-y-auto items-center"
+        cdkDropList
+        [cdkDropListData]="jogadores"
+        [cdkDropListConnectedTo]="['time1List', 'time2List', 'lixeira']"
+        (cdkDropListDropped)="drop($event)"
+      >
+        <h3 class="text-lg font-semibold text-gray-800 mb-2">Jogadores</h3>
+        <div
+          class="flex items-center justify-between bg-white p-3 rounded-md gap-2 w-full h-[52px]"
+          *ngFor="let jogador of jogadores"
+          cdkDrag
+          style="box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); cursor: grab"
+        >
+          <img [src]="jogador.imagem" alt="icone-ak" style="width: 30px" />
+          <span class="text-sm">{{ jogador.nick }}</span>
+          <div
+            class="rounded-full w-6 h-6 flex justify-center items-center text-white text-sm"
+            [ngStyle]="{ 'background-color': getLevelColor(jogador.level) }"
+            style="box-shadow: 0 2px 6px rgba(0, 0, 0, 0.427); font-size: 10px; font-weight: 700"
+          >
+            <span style="text-shadow: 0 0 2px black">{{ jogador.level }}</span>
+          </div>
+
+          <!-- Preview ao arrastar -->
+          <div
+            *cdkDragPreview
+            class="bg-white px-3 py-2 rounded-md shadow-lg flex items-center gap-2"
+            style="font-size: 12px; font-weight: 600; border: 1px solid #ccc"
+          >
+            <img [src]="jogador.imagem" alt="icone-ak" style="width: 24px" />
+            <span>{{ jogador.nick }}</span>
+          </div>
+        </div>
+
+        <div
+          class="h-[80%] flex justify-center items-center text-center text-gray-600"
+          *ngIf="todosJogadores.length == 0"
+        >
+          <p>Primeiro adicione jogadores no seu mix</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção de times -->
+    <div class="flex flex-col gap-5 w-full px-5">
+      <div class="flex items-center justify-start gap-4">
+        <h2 class="text-lg font-bold">Times</h2>
+        <i
+          class="pi pi-sync cursor-pointer hover:text-[gray] transition-all duration-100 ease-in-out"
+          (click)="autoDistribuirTimes()"
+          pTooltip="Auto balanceamento dos times"
+        ></i>
+        <i
+          class="pi pi-directions-alt cursor-pointer text-lg hover:text-[gray] transition-all duration-100 ease-in-out"
+          (click)="limparTimes()"
+          pTooltip="Limpar os jogadores dos times"
+        ></i>
+      </div>
+      <div class="flex gap-5 font-cs">
+        <!-- Time 1 -->
+        <div
+          cdkDropList
+          id="time1List"
+          [cdkDropListData]="time1.jogadores"
+          [cdkDropListConnectedTo]="['time2List', 'jogadores', 'lixeira']"
+          class="w-60 p-3 min-h-[200px] h-96 bg-blue-100 rounded-md transition-all duration-200 text-black"
+          (cdkDropListDropped)="drop($event)"
+        >
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-lg font-medium text-gray-800 drop-shadow-sm m-0">Time 1</span>
+              <div
+                *ngIf="time1.jogadores.length > 0"
+                class="rounded-full w-6 h-6 flex justify-center items-center text-white text-sm"
+                [ngStyle]="{ 'background-color': getLevelColor(getLevelMedio(time1.jogadores)) }"
+                style="
+                  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.427);
+                  font-size: 10px;
+                  font-weight: 700;
+                "
+              >
+                <span style="text-shadow: 0 0 2px black">{{ getLevelMedio(time1.jogadores) }}</span>
+              </div>
+            </div>
+            <div>
+              <span class="text-lg font-semibold text-gray-800 mb-2">
+                {{ time1.jogadores.length }} / 5
+              </span>
+            </div>
+          </div>
+
+          <div
+            class="flex items-center justify-between bg-white p-3 rounded-md gap-2 w-full h-[52px]"
+            *ngFor="let jogador of time1.jogadores"
+            cdkDrag
+            style="box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); cursor: grab"
+          >
+            <img [src]="jogador.imagem" alt="icone-ak" style="width: 30px" />
+            <span class="text-sm">{{ jogador.nick }}</span>
+            <div
+              class="rounded-full w-6 h-6 flex justify-center items-center text-white text-sm"
+              [ngStyle]="{ 'background-color': getLevelColor(jogador.level) }"
+              style="box-shadow: 0 2px 6px rgba(0, 0, 0, 0.427); font-size: 10px; font-weight: 700"
+            >
+              <span style="text-shadow: 0 0 2px black">{{ jogador.level }}</span>
+            </div>
+
+            <!-- Preview -->
+            <div
+              *cdkDragPreview
+              class="bg-white px-3 py-2 rounded-md shadow-lg flex items-center gap-2"
+              style="font-size: 12px; font-weight: 600; border: 1px solid #ccc"
+            >
+              <img [src]="jogador.imagem" alt="icone-ak" style="width: 24px" />
+              <span>{{ jogador.nick }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Time 2 -->
+        <div
+          cdkDropList
+          id="time2List"
+          [cdkDropListData]="time2.jogadores"
+          [cdkDropListConnectedTo]="['time1List', 'jogadores', 'lixeira']"
+          class="w-60 p-3 min-h-[200px] h-96 bg-red-100 rounded-md transition-all duration-200 font-cs text-black"
+          (cdkDropListDropped)="drop($event)"
+        >
+          <div class="flex justify-between items-center mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-lg font-medium text-gray-800 drop-shadow-sm m-0">Time 2</span>
+              <div
+                *ngIf="time2.jogadores.length > 0"
+                class="rounded-full w-6 h-6 flex justify-center items-center text-white text-sm"
+                [ngStyle]="{ 'background-color': getLevelColor(getLevelMedio(time2.jogadores)) }"
+                style="
+                  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.427);
+                  font-size: 10px;
+                  font-weight: 700;
+                "
+              >
+                <span style="text-shadow: 0 0 2px black">{{ getLevelMedio(time2.jogadores) }}</span>
+              </div>
+            </div>
+            <div>
+              <span class="text-lg font-semibold text-gray-800 mb-2">
+                {{ time2.jogadores.length }} / 5
+              </span>
+            </div>
+          </div>
+
+          <div
+            class="flex items-center justify-between bg-white p-3 rounded-md gap-2 w-full h-[52px]"
+            *ngFor="let jogador of time2.jogadores"
+            cdkDrag
+            style="cursor: grab"
+          >
+            <img [src]="jogador.imagem" alt="icone-ak" style="width: 30px" />
+            <span class="text-sm">{{ jogador.nick }}</span>
+            <div
+              class="rounded-full w-6 h-6 flex justify-center items-center text-white text-sm"
+              [ngStyle]="{ 'background-color': getLevelColor(jogador.level) }"
+              style="box-shadow: 0 2px 6px rgba(0, 0, 0, 0.427); font-size: 10px; font-weight: 700"
+            >
+              <span style="text-shadow: 0 0 2px black">{{ jogador.level }}</span>
+            </div>
+
+            <!-- Preview -->
+            <div
+              *cdkDragPreview
+              class="bg-white px-3 py-2 rounded-md shadow-lg flex items-center gap-2"
+              style="
+                font-size: 12px;
+                font-weight: 600;
+                border: 1px solid #ccc;
+                position: fixed;
+                z-index: 1000;
+                pointer-events: none;
+              "
+            >
+              <img [src]="jogador.imagem" alt="icone-ak" style="width: 24px" />
+              <span>{{ jogador.nick }}</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
